@@ -28,9 +28,9 @@ namespace DownloadService
             if (release != null)
             {
                 Code code = await codeRepository.GetCode(codeValue);
-                string temporaryUrl = fileRepository.GetTemporaryUrl(code.Url);
-                code.Downloads
-                codeRepository.Update(code);
+                string temporaryUrl = await fileRepository.GetTemporaryUrl(release.Url);
+                //code.Downloads
+                //codeRepository.Update(code);
                 
                 return temporaryUrl; 
             }
