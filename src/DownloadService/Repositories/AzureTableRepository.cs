@@ -6,16 +6,11 @@ namespace DownloadService
 {
     public class AzureTableRepository
     {
-        private readonly DownloadServiceConfiguration configuration;
+        internal TableClient client { get; private set; }
 
-        public AzureTableRepository(IOptions<DownloadServiceConfiguration> options)
+        public AzureTableRepository(string table, IOptions<DownloadServiceConfiguration> options)
         {
-            configuration = options.Value;
-        }
-
-        protected T GetEntity<T>(string table, string partitionKey, string rowKey)
-        {
-            return default; // TableClient client = new TableClient()
+            client = new TableClient(options.Value.AzureStorageConnectionString, table);
         }
     }
 }

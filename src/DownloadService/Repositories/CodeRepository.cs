@@ -10,14 +10,14 @@ namespace DownloadService
 
     public class CodeRepository : AzureTableRepository, ICodeRepository
     {
-        public CodeRepository(IOptions<DownloadServiceConfiguration> options) : base(options) { }
+        public CodeRepository(IOptions<DownloadServiceConfiguration> options) : base(GetTableName(), options) { }
 
         public async Task<Code> GetCode(string releaseName, string code)
         {
-            return GetEntity<Code>(GetTableName(), releaseName, code);
+            return await client.GetEntityAsync<Code>(releaseName, code);
         }
 
-        private string GetTableName()
+        private static string GetTableName()
         {
             return "Codes";
         }

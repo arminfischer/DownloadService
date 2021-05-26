@@ -11,14 +11,15 @@ namespace DownloadService
 
     public class ReleaseRepository : AzureTableRepository, IReleaseRepository
     {
-        public ReleaseRepository(IOptions<DownloadServiceConfiguration> options) : base(options) { }
+        public ReleaseRepository(IOptions<DownloadServiceConfiguration> options) : base(GetTableName(), options) { }
 
         public async Task<Release> GetRelease(string releaseName)
         {
-            return GetEntity<Release>(GetTableName(), GetPartitionKey(), releaseName);
+            Release r = await client.GetEntityAsync<Release>(GetPartitionKey(), releaseName);
+            return r;
         }
 
-        private string GetTableName()
+        private static string GetTableName()
         {
             return "Releases";
         }
