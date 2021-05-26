@@ -1,4 +1,5 @@
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: FunctionsStartup(typeof(DownloadService.Startup))]
@@ -14,7 +15,12 @@ namespace DownloadService
                 .AddSingleton<IDownloadService, DownloadService>()
                 .AddSingleton<IReleaseRepository, ReleaseRepository>()
                 .AddSingleton<ICodeRepository, CodeRepository>()
-                .AddSingleton<IFileRepository, FileRepository>();
+                .AddSingleton<IFileRepository, FileRepository>()
+                .AddOptions<DownloadServiceConfiguration>()
+                .Configure<IConfiguration>((settings, configuration) =>
+                {
+                    configuration.GetSection("DownloadService").Bind(settings);
+                });
         }
     }
 }

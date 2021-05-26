@@ -10,7 +10,7 @@ namespace DownloadService.Test
     public class DownloadServiceTest
     {
         private IDownloadService downloadService;
-        private ILogger logger;
+        private ILogger<DownloadFile> logger;
         private IReleaseRepository releaseRepository;
         private ICodeRepository codeRepository;
         private IFileRepository fileRepository;
@@ -23,7 +23,7 @@ namespace DownloadService.Test
             fileRepository = Substitute.For<IFileRepository>();
             downloadService = new DownloadService(releaseRepository, codeRepository, fileRepository);
 
-            logger = Substitute.For<ILogger>();
+            logger = Substitute.For<ILogger<DownloadFile>>();
         }
 
         [Test]
@@ -31,15 +31,28 @@ namespace DownloadService.Test
         {
             // Arrange
             releaseRepository.GetRelease("myrelease").Returns(Task.FromResult(new Release { Url = "http://myrelease" }));
-            codeRepository.GetCode("code123").Returns(Task.FromResult(new Code()));
+            codeRepository.GetCode("myrelease", "code123").Returns(Task.FromResult(new Code()));
             fileRepository.GetTemporaryUrl("http://myrelease").Returns(Task.FromResult("http://mydownloadfile"));
-            DownloadFile downloadFile = new DownloadFile(downloadService);
+            DownloadFile downloadFile = new DownloadFile(downloadService, logger);
 
             // Act
-            RedirectResult result = (RedirectResult)downloadFile.Run(Substitute.For<HttpRequest>(), "myrelease", "code123", logger).GetAwaiter().GetResult();
+            RedirectResult result = (RedirectResult)downloadFile.Run(Substitute.For<HttpRequest>(), "myrelease", "code123").GetAwaiter().GetResult();
 
             // Assert
             Assert.AreEqual(result.Url, "http://mydownloadfile");
+        }
+
+        [Test]
+        public void DownloadFile_Should_ReturnBadRequest_When_ReleaseDoesNotExist()
+        {
+            // Arrange
+            DownloadFile downloadFile = new DownloadFile(downloadService, logger);
+
+            // Act
+            BadRequestObjectResult result = (BadRequestObjectResult)downloadFile.Run(Substitute.For<HttpRequest>(), "myrelease", "code123").GetAwaiter().GetResult();
+
+            // Assert
+            Assert.AreEqual(result.Value, "The release is not valid.");
         }
     }
 }

@@ -1,17 +1,25 @@
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 
 namespace DownloadService
 {
     public interface ICodeRepository
     {
-        Task<Code> GetCode(string code);
+        Task<Code> GetCode(string releaseName, string code);
     }
 
-    public class CodeRepository : ICodeRepository
+    public class CodeRepository : AzureTableRepository, ICodeRepository
     {
-        public async Task<Code> GetCode(string code)
+        public CodeRepository(IOptions<DownloadServiceConfiguration> options) : base(options) { }
+
+        public async Task<Code> GetCode(string releaseName, string code)
         {
-            return null;
+            return GetEntity<Code>(GetTableName(), releaseName, code);
+        }
+
+        private string GetTableName()
+        {
+            return "Codes";
         }
     }
 }

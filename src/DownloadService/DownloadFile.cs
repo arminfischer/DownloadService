@@ -10,21 +10,22 @@ namespace DownloadService
 {
     public class DownloadFile
     {
-        private readonly IDownloadService _downloadService;
+        private readonly IDownloadService downloadService;
+        private readonly ILogger<DownloadFile> logger;
 
-        public DownloadFile(IDownloadService downloadService)
+        public DownloadFile(IDownloadService downloadService, ILogger<DownloadFile> logger)
         {
-            _downloadService = downloadService;
+            this.downloadService = downloadService;
+            this.logger = logger;
         }
 
         [FunctionName("DownloadFile")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "download/{releaseName}/{codeValue}")] HttpRequest req, string releaseName, string codeValue,
-            ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "download/{releaseName}/{codeValue}")] HttpRequest req, string releaseName, string codeValue)
         {
             try
             {
-                string url = await _downloadService.GetFileUrl(releaseName, codeValue);
+                string url = await downloadService.GetFileUrl(releaseName, codeValue);
 
                 return new RedirectResult(url);
             }
