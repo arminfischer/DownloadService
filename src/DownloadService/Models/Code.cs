@@ -5,12 +5,20 @@ using Azure.Data.Tables;
 namespace DownloadService {
     public class Code : ITableEntity
     {
-        public int Downloads { get; internal set; }
-        public string PartitionKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string RowKey { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int Downloads { get; set; }
+        public string PartitionKey { get ; set; }
+        public string RowKey { get ; set; }
+        public DateTimeOffset? Timestamp { get; set; }
+        public ETag ETag { get ; set; }
 
-        public DateTimeOffset? Timestamp => throw new NotImplementedException();
+        public bool FurtherDownloadsAllowed(Release release)
+        {
+            if (release.MaxAllowedDownloads > 0 && this.Downloads >= release.MaxAllowedDownloads)
+            {
+                return false;
+            }
 
-        public ETag ETag { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+            return true;
+        }
     }
 }

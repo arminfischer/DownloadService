@@ -6,22 +6,27 @@ namespace DownloadService
 {
     public interface IReleaseRepository
     {
-        Task<Release> GetRelease(string releaseName);
+        Task<Release> Get(string releaseName);
     }
 
     public class ReleaseRepository : AzureTableRepository, IReleaseRepository
     {
-        public ReleaseRepository(IOptions<DownloadServiceConfiguration> options) : base(GetTableName(), options) { }
+        public ReleaseRepository(IOptions<DownloadServiceConfiguration> options) : base(options.Value.TableNameReleases, options) { }
 
-        public async Task<Release> GetRelease(string releaseName)
+        public async Task<Release> Get(string releaseName)
         {
-            Release r = await client.GetEntityAsync<Release>(GetPartitionKey(), releaseName);
-            return r;
-        }
-
-        private static string GetTableName()
-        {
-            return "Releases";
+            try
+            {
+                return await TableClient.GetEntityAsync<Release>(GetPartitionKey(), releaseName);
+            }
+            catch (Azure.RequestFailedException exception)
+            {
+                throw new ArgumentException($"Release could not be retrieved ({exception.ErrorCode}).");
+            }
+            catch (Exception exception)
+            {
+                throw new ArgumentException(exception.Message);
+            }
         }
 
         private string GetPartitionKey()
