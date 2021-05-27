@@ -21,6 +21,8 @@ This project provides a simple but effective Download Service.
 ## Future Enhancements
 * Github action to create 
 * PowerShell to create releases
-* Removal of unnecessary connection strings in Azure Function
 * UI and backend to manage releases
 * ...
+
+## Notes
+* Full connection string with Storage Account Key required in order to generate SAS key. This is not ideal for security, one improvement could be to use a locked down Key Vault.

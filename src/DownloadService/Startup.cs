@@ -19,7 +19,7 @@ namespace DownloadService
                 .AddOptions<DownloadServiceConfiguration>()
                 .Configure<IConfiguration>((settings, configuration) =>
                 {
-                    configuration.GetSection("DownloadService").Bind(settings);
+                    configuration.Bind(settings);
                 });
         }
     }

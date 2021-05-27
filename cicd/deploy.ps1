@@ -85,18 +85,10 @@ function DeployFunctionApp {
 }
 
 function ConfigureSettingsAndServices {
-    # Create SAS key to be used in connection string to avoid using a master key
-    $expiryDate = (Get-Date).AddYears(1).ToString("yyyy-MM-dd")
-    $sasKey = (az storage account generate-sas --account-name $StorageAccountName --permissions lruw --resource-types sco --services bt --expiry $expiryDate | ConvertFrom-Json)
-    $connectionString = "BlobEndpoint=https://$StorageAccountName.blob.core.windows.net/;QueueEndpoint=https://$StorageAccountName.queue.core.windows.net/;FileEndpoint=https://$StorageAccountName.file.core.windows.net/;TableEndpoint=https://$StorageAccountName.table.core.windows.net/;SharedAccessSignature=$sasKey"
-    $connectionString = $connectionString -replace "&", "^^^&" # "&" has to be replaced to be successfully updated
-
-    # Configure app settings in Azure Function
     az functionapp config appsettings set --name $DownloadServiceAppName --resource-group $ResourceGroup --settings `
-        "DownloadService:TableNameCodes=$TableNameCodes" `
-        "DownloadService:TableNameReleases=$TableNameReleases" `
-        "DownloadService:ContainerNameFiles=$ContainerNameFiles" `
-        "DownloadService:AzureStorageConnectionString=$connectionString"
+        "TableNameCodes=$TableNameCodes" `
+        "TableNameReleases=$TableNameReleases" `
+        "ContainerNameFiles=$ContainerNameFiles"
 }
 
 CreateResourceGroupIfNotExists

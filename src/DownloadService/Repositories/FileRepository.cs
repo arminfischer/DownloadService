@@ -22,7 +22,7 @@ namespace DownloadService
 
         public async Task<Uri> GetTemporaryUri(string filename)
         {
-            BlobClient client = new BlobClient(downloadServiceConfiguration.AzureStorageConnectionString, downloadServiceConfiguration.ContainerNameFiles, filename);
+            BlobClient client = new BlobClient(downloadServiceConfiguration.AzureWebJobsStorage, downloadServiceConfiguration.ContainerNameFiles, filename);
             return client.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.AddMinutes(1));
         }
     }

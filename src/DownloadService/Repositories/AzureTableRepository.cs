@@ -9,7 +9,7 @@ namespace DownloadService
 
         public AzureTableRepository(string table, IOptions<DownloadServiceConfiguration> options)
         {
-            TableClient = new TableClient(options.Value.AzureStorageConnectionString, table);
+            TableClient = new TableClient(options.Value.AzureWebJobsStorage, table);
         }
     }
 }
